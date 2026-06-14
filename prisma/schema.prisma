@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ReviewStatus {
+  PENDING
+  INCLUDE
+  EXCLUDE
+  MAYBE
+}
+
+model User {
+  id             String        @id @default(cuid())
+  name           String?
+  email          String?       @unique
+  image          String?
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  projects       Project[]     @relation("UserProjects")
+}
+
+model Organization {
+  id       String    @id @default(cuid())
+  name     String
+  users    User[]
+  projects Project[]
+}
+
+model Project {
+  id             String       @id @default(cuid())
+  name           String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  users          User[]       @relation("UserProjects")
+  articles       Article[]
+}
+
+model Article {
+  id              String       @id @default(cuid())
+  projectId       String
+  project         Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  status          ReviewStatus @default(PENDING)
+
+  pmid            String?
+  title           String?
+  authors         String?
+  citation        String?
+  firstAuthor     String?
+  journalBook     String?
+  publicationYear String?
+  createDate      String?
+  pmcid           String?
+  nihmsId         String?
+  doi             String?
+
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
