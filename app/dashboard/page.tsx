@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import * as XLSX from "xlsx";
-import { useSession } from "next-auth/react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArticleTable } from "@/components/workspace/article-table";
 import { Button } from "@/components/ui/button";
@@ -41,12 +40,11 @@ type PreviewRow = {
 };
 
 export default function DashboardPage() {
-  const { data: session } = useSession();
-  
   const [projects, setProjects] = useState<Project[]>([]);
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
   const [newProjectName, setNewProjectName] = useState("");
   const [isCreatingProject, setIsCreatingProject] = useState(false);
+  const [projectError, setProjectError] = useState(""); 
   
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
@@ -55,27 +53,33 @@ export default function DashboardPage() {
   const [previewRows, setPreviewRows] = useState<PreviewRow[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const fetchProjects = async () => {
-    const res = await fetch("/api/projects");
-    if (res.ok) {
-      const data = await res.json();
-      if (data.projects) {
-        setProjects(data.projects);
-        if (!activeProjectId && data.projects.length > 0) {
-          setActiveProjectId(data.projects[0].id);
+  const fetchProjects = useCallback(async () => {
+    try {
+      const res = await fetch("/api/projects");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.projects) {
+          setProjects(data.projects);
+          if (!activeProjectId && data.projects.length > 0) {
+            setActiveProjectId(data.projects[0].id);
+          }
         }
       }
+    } catch (err) {
+      console.error("Failed to fetch projects", err);
     }
-  };
+  }, [activeProjectId]);
 
   useEffect(() => {
     fetchProjects();
-  }, []);
+  }, [fetchProjects]);
 
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newProjectName.trim()) return;
+    
     setIsCreatingProject(true);
+    setProjectError(""); 
 
     try {
       const res = await fetch("/api/projects", {
@@ -85,13 +89,16 @@ export default function DashboardPage() {
       });
       const data = await res.json();
       
-      if (data.success) {
+      if (res.ok && data.success) {
         setNewProjectName("");
         await fetchProjects();
         setActiveProjectId(data.project.id);
+      } else {
+        setProjectError(data.error || "Failed to create project");
       }
     } catch (err) {
       console.error(err);
+      setProjectError("Network error occurred.");
     } finally {
       setIsCreatingProject(false);
     }

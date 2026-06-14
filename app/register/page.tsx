@@ -110,7 +110,7 @@ export default function RegisterPage() {
         <CardFooter>
           <div className="text-sm text-center w-full text-zinc-500">
             Already have an account?{" "}
-            <Link href="/login" className="text-zinc-900 underline hover:text-zinc-700">
+            <Link href="/login" className="text-zinc-200 ml-1 underline hover:text-zinc-700hover:text-zinc-700 dark:text-zinc-50 dark:hover:text-zinc-300">
               Sign in
             </Link>
           </div>

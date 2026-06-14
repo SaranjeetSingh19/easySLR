@@ -3,9 +3,18 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Hexagon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { 
+  Card, 
+  CardContent, 
+  CardDescription, 
+  CardHeader, 
+  CardTitle,
+  CardFooter 
+} from "@/components/ui/card";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -34,7 +43,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-950">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-950 p-4">
+      
+      <div className="mb-8 flex items-center gap-2 font-semibold tracking-tight text-zinc-50">
+        <Hexagon className="h-6 w-6" />
+        <span className="text-xl">EasySLR</span>
+      </div>
+
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold tracking-tight">Sign in</CardTitle>
@@ -75,6 +90,18 @@ export default function LoginPage() {
             </Button>
           </form>
         </CardContent>
+        
+        <CardFooter className="flex justify-center pb-6">
+          <div className="text-sm text-center w-full text-zinc-500">
+            Don&apos;t have an account?{" "}
+            <Link 
+              href="/register" 
+              className="font-medium text-zinc-900 ml-1 underline underline-offset-4 hover:text-zinc-700 dark:text-zinc-50 dark:hover:text-zinc-300"
+            >
+              Click here to register
+            </Link>
+          </div>
+        </CardFooter>
       </Card>
     </div>
   );
