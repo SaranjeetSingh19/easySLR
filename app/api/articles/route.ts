@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 
-// GET: Fetch all articles for a specific project
 export async function GET(req: Request) {
   try {
     const session = await getServerSession();
@@ -10,7 +9,6 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Grab the projectId from the URL (e.g., /api/articles?projectId=123)
     const { searchParams } = new URL(req.url);
     const projectId = searchParams.get("projectId");
 
@@ -18,7 +16,6 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Project ID is required" }, { status: 400 });
     }
 
-    // Fetch articles, ordering by newest first
     const articles = await prisma.article.findMany({
       where: {
         projectId: projectId,
@@ -38,7 +35,6 @@ export async function GET(req: Request) {
   }
 }
 
-// PATCH: Update the review status (INCLUDE, EXCLUDE, MAYBE)
 export async function PATCH(req: Request) {
   try {
     const session = await getServerSession();
@@ -52,10 +48,8 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: "Article ID(s) and status are required" }, { status: 400 });
     }
 
-    // Determine if we are updating a single article or an array of them
     const idsToUpdate = articleIds || [articleId];
 
-    // Bulk update in PostgreSQL
     const result = await prisma.article.updateMany({
       where: { id: { in: idsToUpdate } },
       data: { status },

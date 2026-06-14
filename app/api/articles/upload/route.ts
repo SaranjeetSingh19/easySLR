@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
   try {
-    // 1. Security Check: Who is uploading this?
     const session = await getServerSession();
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -22,7 +21,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // 2. Authorization Check: Does this user actually own this project?
     const project = await prisma.project.findFirst({
       where: {
         id: projectId,
@@ -39,10 +37,8 @@ export async function POST(req: Request) {
       );
     }
 
-    // 3. Format the Excel data to match our Prisma schema
     const formattedArticles = articles.map((row: any) => ({
       projectId,
-      // We convert values to strings because Excel sometimes reads numbers (like Years) as Ints
       pmid: row["PMID"]?.toString() || null,
       title: row["Title"]?.toString() || null,
       authors: row["Authors"]?.toString() || null,
@@ -56,11 +52,8 @@ export async function POST(req: Request) {
       doi: row["DOI"]?.toString() || null,
     }));
 
-    // 4. Trap Handling: Remove exact duplicates within this specific payload
-    // We check if a row has the exact same Title and DOI as another row in the upload
     const uniqueArticlesMap = new Map();
     formattedArticles.forEach((article) => {
-      // If there's no title, we skip it (bad data trap)
       if (!article.title) return;
 
       const uniqueKey = `${article.title}-${article.doi}`;
@@ -71,10 +64,9 @@ export async function POST(req: Request) {
 
     const finalArticlesToInsert = Array.from(uniqueArticlesMap.values());
 
-    // 5. Bulk Insert into PostgreSQL
     const result = await prisma.article.createMany({
       data: finalArticlesToInsert,
-      skipDuplicates: true, // Prisma will ignore rows that violate database constraints
+      skipDuplicates: true, 
     });
 
     return NextResponse.json({

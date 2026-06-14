@@ -34,7 +34,6 @@ export default function RegisterPage() {
         throw new Error(data.error || "Something went wrong");
       }
 
-      // 2. If successful, immediately log them in!
       const result = await signIn("credentials", {
         email,
         password,

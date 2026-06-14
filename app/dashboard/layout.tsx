@@ -10,7 +10,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen flex flex-col bg-zinc-50/50 dark:bg-zinc-950">
-      {/* Sleek, minimalist top navigation */}
       <header className="sticky top-0 z-50 w-full border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md">
         <div className="container mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2 font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
@@ -19,7 +18,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Theme Toggler */}
             <Button
               variant="ghost"
               size="icon"
@@ -31,7 +29,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <span className="sr-only">Toggle theme</span>
             </Button>
             
-            {/* Minimal Logout */}
             <Button 
               variant="ghost" 
               size="sm" 
@@ -45,7 +42,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </header>
 
-      {/* Main Content Area */}
       <main className="flex-1 container mx-auto p-4 md:p-8">
         {children}
       </main>

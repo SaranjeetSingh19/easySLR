@@ -37,12 +37,10 @@ export function ArticleTable({ projectId, refreshTrigger }: { projectId: string 
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Search & Filter State
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<ReviewStatus>("ALL");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
 
-  // Bulk Action State
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isUpdatingBulk, setIsUpdatingBulk] = useState(false);
 
@@ -61,10 +59,9 @@ export function ArticleTable({ projectId, refreshTrigger }: { projectId: string 
       }
     };
     fetchArticles();
-    setSelectedIds(new Set()); // Clear selections on refresh
+    setSelectedIds(new Set());
   }, [projectId, refreshTrigger]);
 
-  // --- Filtering & Sorting Logic ---
   const filteredAndSortedArticles = useMemo(() => {
     let result = [...articles];
     if (searchTerm) {
@@ -88,9 +85,7 @@ export function ArticleTable({ projectId, refreshTrigger }: { projectId: string 
 
   const toggleSort = () => setSortOrder((prev) => (prev === "asc" ? "desc" : prev === "desc" ? null : "asc"));
 
-  // --- CSV Export Logic ---
   const handleExportCSV = () => {
-    // We only export the articles currently visible in the table
     const exportData = filteredAndSortedArticles.map(a => ({
       Title: a.title,
       Authors: a.authors,
@@ -105,7 +100,6 @@ export function ArticleTable({ projectId, refreshTrigger }: { projectId: string 
     XLSX.writeFile(workbook, "EasySLR_Export.csv", { bookType: "csv" });
   };
 
-  // --- Individual Status Update ---
   const handleStatusChange = async (articleId: string, newStatus: ReviewStatus) => {
     setArticles((prev) => prev.map((article) => article.id === articleId ? { ...article, status: newStatus } : article));
     try {
@@ -119,7 +113,6 @@ export function ArticleTable({ projectId, refreshTrigger }: { projectId: string 
     }
   };
 
-  // --- Bulk Action Logic ---
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
       const allIds = new Set(filteredAndSortedArticles.map(a => a.id));
@@ -142,7 +135,6 @@ export function ArticleTable({ projectId, refreshTrigger }: { projectId: string 
     
     const idsArray = Array.from(selectedIds);
 
-    // Optimistic UI Update
     setArticles((prev) => prev.map((article) => idsArray.includes(article.id) ? { ...article, status: newStatus } : article));
 
     try {
@@ -151,7 +143,7 @@ export function ArticleTable({ projectId, refreshTrigger }: { projectId: string 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ articleIds: idsArray, status: newStatus }),
       });
-      setSelectedIds(new Set()); // Clear selection after success
+      setSelectedIds(new Set()); 
     } catch (error) {
       console.error("Bulk update failed", error);
     } finally {
@@ -176,7 +168,7 @@ export function ArticleTable({ projectId, refreshTrigger }: { projectId: string 
 
   return (
     <div className="space-y-4 relative">
-      {/* --- Toolbar --- */}
+
       <div className="flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center">
         <div className="relative w-full sm:max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500" />
@@ -204,12 +196,10 @@ export function ArticleTable({ projectId, refreshTrigger }: { projectId: string 
         </div>
       </div>
 
-      {/* --- Data Table --- */}
       <div className="rounded-md border border-zinc-200 dark:border-zinc-800 overflow-hidden bg-white dark:bg-zinc-950 relative">
         <Table className="table-fixed w-full min-w-[800px]">
           <TableHeader className="bg-zinc-50 dark:bg-zinc-900">
             <TableRow>
-              {/* Checkbox Column */}
               <TableHead className="w-[50px] text-center">
                 <Checkbox checked={isAllSelected} onCheckedChange={handleSelectAll} aria-label="Select all" />
               </TableHead>
@@ -263,7 +253,6 @@ export function ArticleTable({ projectId, refreshTrigger }: { projectId: string 
         <div>Showing {filteredAndSortedArticles.length} of {articles.length} articles</div>
       </div>
 
-      {/* --- Floating Action Bar (Dynamic Island) --- */}
       {selectedIds.size > 0 && (
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-8 fade-in duration-300">
           <div className="bg-zinc-900 dark:bg-white text-zinc-50 dark:text-zinc-900 px-6 py-3 rounded-full shadow-2xl flex items-center gap-4">

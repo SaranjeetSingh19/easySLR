@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState(""); // We capture this even though our backend skips checking it for now
+  const [password, setPassword] = useState(""); 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -19,7 +19,6 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
 
-    // This calls the authorize() function we wrote in route.ts
     const result = await signIn("credentials", {
       email,
       password,
@@ -30,7 +29,6 @@ export default function LoginPage() {
       setError("Invalid credentials. Please try again.");
       setLoading(false);
     } else {
-      // If successful, push them to the dashboard
       router.push("/dashboard");
     }
   };

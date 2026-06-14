@@ -43,13 +43,11 @@ type PreviewRow = {
 export default function DashboardPage() {
   const { data: session } = useSession();
   
-  // --- Project State ---
   const [projects, setProjects] = useState<Project[]>([]);
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
   const [newProjectName, setNewProjectName] = useState("");
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   
-  // --- Upload & Staging Preview State ---
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState("");
@@ -72,7 +70,6 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchProjects();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCreateProject = async (e: React.FormEvent) => {
@@ -100,7 +97,6 @@ export default function DashboardPage() {
     }
   };
 
-  // 1. Intercept file and generate the client-side validation preview
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -129,12 +125,10 @@ export default function DashboardPage() {
         if (!title) errors.push("Missing Title");
         if (!pmid) errors.push("Missing PMID");
         
-        // Validate publication year format
         if (publicationYear && isNaN(Number(publicationYear))) {
           errors.push("Invalid Year Format");
         }
 
-        // File-level duplicate tracking
         const uniqueKey = `${title.toLowerCase().trim()}-${doi.toLowerCase().trim()}`;
         if (title && seenKeys.has(uniqueKey)) {
           errors.push("Duplicate Row in File");
@@ -163,7 +157,6 @@ export default function DashboardPage() {
     }
   };
 
-  // 2. Commit only the validated/selected rows to PostgreSQL database
   const handleCommitUpload = async () => {
     const validArticlesToUpload = previewRows
       .filter(row => row.isValid)
@@ -216,7 +209,6 @@ export default function DashboardPage() {
  return (
     <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       
-      {/* ================= HEADER ROW ================= */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">{activeProjectName}</h1>
@@ -236,10 +228,8 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* ================= MIDDLE ROW: SIDEBAR & UPLOAD ================= */}
       <div className="flex flex-col md:flex-row gap-8">
         
-        {/* Left Sidebar (Fixed Width) */}
         <div className="w-full md:w-64 shrink-0 space-y-6">
           <div>
             <h2 className="text-lg font-semibold tracking-tight mb-4">Your Projects</h2>
@@ -286,10 +276,8 @@ export default function DashboardPage() {
           </form>
         </div>
 
-        {/* Right Upload Area (Fills remaining space) */}
         <div className="flex-1 min-w-0">
           {activeProjectId && previewRows.length > 0 ? (
-            /* Staging Preview View */
             <Card className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-sm rounded-xl overflow-hidden animate-in fade-in duration-300">
               <div className="p-4 bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
@@ -309,7 +297,6 @@ export default function DashboardPage() {
               </div>
               <div className="max-h-64 overflow-y-auto">
                 <Table className="table-fixed w-full min-w-[700px]">
-                  {/* ... Keep your existing preview table code here ... */}
                   <TableHeader className="sticky top-0 bg-zinc-50 dark:bg-zinc-900 shadow-sm z-10">
                     <TableRow>
                       <TableHead className="w-[45%]">Title</TableHead>
@@ -332,14 +319,12 @@ export default function DashboardPage() {
               </div>
             </Card>
           ) : activeProjectId ? (
-            /* Standard Dropzone & Premium Success State */
             <Card className={`border-dashed border-2 bg-transparent shadow-none transition-colors
               ${error ? "border-red-500/50 bg-red-50/50 dark:bg-red-950/20" : "border-zinc-200 dark:border-zinc-800"}
               ${success ? "border-green-500/50 bg-green-50/50 dark:bg-green-950/20" : ""}
             `}>
               <CardContent className="flex flex-col items-center justify-center h-64 text-center space-y-6 pt-6">
                 {success ? (
-                  // --- NEW: Premium Success State UI ---
                   <div className="flex flex-col items-center justify-center space-y-4 animate-in zoom-in duration-300">
                     <div className="h-20 w-20 rounded-full bg-green-100 dark:bg-green-500/10 flex items-center justify-center border border-green-200 dark:border-green-500/20">
                       <CheckCircle2 className="h-10 w-10 text-green-600 dark:text-green-500" />
@@ -355,7 +340,6 @@ export default function DashboardPage() {
                     </Button>
                   </div>
                 ) : (
-                  // --- Default Upload State ---
                   <>
                     <div className="h-12 w-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                       {error ? <AlertCircle className="h-6 w-6 text-red-500" /> : <UploadCloud className="h-6 w-6 text-zinc-600 dark:text-zinc-400" />}
@@ -380,8 +364,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* ================= BOTTOM ROW: FULL WIDTH TABLE ================= */}
-      {/* Notice this is completely outside the sidebar flex container now! */}
       <div className="pt-8 border-t border-zinc-200 dark:border-zinc-800 mt-12">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold tracking-tight">Project Articles</h2>
