@@ -2,7 +2,7 @@
 
 A full-stack, multi-tenant SaaS workspace for systematic literature reviews. Researchers can create projects, stage and validate Excel datasets, and utilize a high-performance data table to review, filter, and bulk-process articles.
 
-**Live Deployment:** [Insert Vercel/AWS Link Here]
+**Live Deployment:** [https://main.d2sw0ph2iwv9et.amplifyapp.com]
 **Demo Credentials:** - Email: `john@gmail.com`
 - Password: `1234`
 
